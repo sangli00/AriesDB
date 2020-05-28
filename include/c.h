@@ -15,8 +15,19 @@ typedef unsigned char bool;
 #endif
 
 
+/*-------------------intN----------------------------*/
+typedef signed char int8;               /* == 8 bits */
+typedef signed short int16;             /* == 16 bits */
+typedef signed int int32;               /* == 32 bits */
 
-typedef long int int64;
-typedef unsigned long int uint64;
+
+/*-------------------uintN----------------------------*/
+typedef unsigned char uint8;    /* == 8 bits */
+typedef unsigned short uint16;  /* == 16 bits */
+typedef unsigned int uint32;    /* == 32 bits */
+
+/*-------------------64 bit----------------------------*/
+typedef long long int int64;
+typedef unsigned long long int uint64;
 
 #endif
