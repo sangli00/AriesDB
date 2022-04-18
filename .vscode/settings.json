@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "univ.i": "cpp",
+        "*.ic": "cpp"
+    }
+}
