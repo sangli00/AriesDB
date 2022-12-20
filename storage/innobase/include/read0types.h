@@ -37,7 +37,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "dict0mem.h"
 
 #include "trx0types.h"
-
+#include "trx0scn.h"
 // Friend declaration
 class MVCC;
 
@@ -173,6 +173,17 @@ class ReadView {
   void write_scn(Global_SCN_t global_scn)
   {
     scn = global_scn;
+  }
+
+  [[nodiscard]] bool changes_visible_scn(trx_id_t id) {
+    Global_SCN_t rec_scn = get_scn_by_trx_id(id);
+
+    if(scn > rec_scn)
+    {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /** Check whether the changes by id are visible.

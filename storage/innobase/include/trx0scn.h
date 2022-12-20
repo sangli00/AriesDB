@@ -15,8 +15,9 @@
 
 #define SCN_NUMS_OF_BLOCK (2048)
 #define SCN_BLOCK_SIZE (16384)
-
 #define SCN_BLOCK_NUMS (1024)
+
+#define SCN_FILE_PATH "scn_file"
 
 constexpr Global_SCN_t SCN_SYS_SCN_WRITE_MARGIN = 1024;
 
@@ -24,6 +25,9 @@ constexpr Global_SCN_t SCN_SYS_SCN_WRITE_MARGIN = 1024;
  * @brief write scn buffer to file,default file size is 1GB
  */
 constexpr uint32_t SCN_FILE_DISK_SIZE = 1024 * 1024 * 1024; /* 1G */
+
+
+constexpr Global_SCN_t SCN_INIT_VALUE = 10000;
 
 /**
  * @brief write scn to mtr,mtr type is MLOG_SCN,but sometimes,need write diff length scn to mtr
@@ -75,5 +79,11 @@ extern void trx_commit_in_scn(trx_t *trx,trx_id_t id,Global_SCN_t scn);
  * @return Global_SCN_t 
  */
 extern Global_SCN_t get_scn_by_trx_id(trx_id_t trx_id);
+
+
+extern void trx_scn_create();
+
+extern void trx_scn_init(bool create_new_db);
+
 
 #endif

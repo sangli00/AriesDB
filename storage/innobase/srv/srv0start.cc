@@ -2146,8 +2146,11 @@ dberr_t srv_start(bool create_new_db) {
   recv_sys_create();
   recv_sys_init(buf_pool_get_curr_size());
   trx_sys_create();
+  trx_scn_create();
   lock_sys_create(srv_lock_table_size);
   srv_start_state_set(SRV_START_STATE_LOCK_SYS);
+
+  trx_scn_init(create_new_db);
 
   /* Create i/o-handler threads: */
 

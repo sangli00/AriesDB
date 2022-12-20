@@ -425,7 +425,7 @@ bool Parallel_reader::Scan_ctx::check_visibility(const rec_t *&rec,
                                                  ulint *&offsets,
                                                  mem_heap_t *&heap,
                                                  mtr_t *mtr) {
-  const auto table_name = m_config.m_index->table->name;
+  //const auto table_name = m_config.m_index->table->name;
 
   ut_ad(!m_trx || m_trx->read_view == nullptr ||
         MVCC::is_view_active(m_trx->read_view));
@@ -445,7 +445,7 @@ bool Parallel_reader::Scan_ctx::check_visibility(const rec_t *&rec,
       }
 
       if (m_trx->isolation_level > TRX_ISO_READ_UNCOMMITTED &&
-          !view->changes_visible(rec_trx_id, table_name)) {
+          !view->changes_visible_scn(rec_trx_id)) {
         rec_t *old_vers;
 
         row_vers_build_for_consistent_read(rec, mtr, m_config.m_index, &offsets,

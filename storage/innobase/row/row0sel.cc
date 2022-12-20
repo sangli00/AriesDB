@@ -1750,6 +1750,7 @@ skip_lock:
     a previous version of the record */
 
     if (index->is_clustered()) {
+    
       if (!lock_clust_rec_cons_read_sees(rec, index, offsets,
                                          node->read_view)) {
         err = row_sel_build_prev_vers(node->read_view, index, rec, &offsets,
@@ -3319,7 +3320,7 @@ non-clustered index. Does the necessary locking.
 
     if (trx->isolation_level > TRX_ISO_READ_UNCOMMITTED &&
         !lock_clust_rec_cons_read_sees(clust_rec, clust_index, *offsets,
-                                       trx_get_read_view(trx))) {
+                                       trx_get_read_view(trx))){
       if (clust_rec != cached_clust_rec) {
         /* The following call returns 'offsets' associated with 'old_vers' */
         err = row_sel_build_prev_vers_for_mysql(
@@ -3763,8 +3764,9 @@ static ulint row_sel_try_search_shortcut_for_mysql(
 
   *offsets = rec_get_offsets(rec, index, *offsets, ULINT_UNDEFINED, heap);
 
+
   if (!lock_clust_rec_cons_read_sees(rec, index, *offsets,
-                                     trx_get_read_view(trx))) {
+                                     trx_get_read_view(trx))) {                
     return (SEL_RETRY);
   }
 
@@ -5329,7 +5331,7 @@ rec_loop:
 
       if (srv_force_recovery < 5 &&
           !lock_clust_rec_cons_read_sees(rec, index, offsets,
-                                         trx_get_read_view(trx))) {
+                                         trx_get_read_view(trx))){
         rec_t *old_vers;
         /* The following call returns 'offsets' associated with 'old_vers' */
         err = row_sel_build_prev_vers_for_mysql(

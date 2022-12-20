@@ -66,7 +66,7 @@ trx_scn_total_mem_size()
 trx scn init 
 */
 void
-trx_scn_init()
+trx_scn_create()
 {
     /* get alloc memory size */
     size_t size = trx_scn_total_mem_size();
@@ -81,6 +81,22 @@ trx_scn_init()
 
 
     return;
+}
+
+
+/**
+ * @brief build trx scn values
+ * 
+ * @param is_create 
+ */
+void
+trx_scn_init(bool create_new_db) {
+    ut_a(trx_scn_sys != nullptr);
+
+    if(create_new_db) {
+        trx_scn_sys->max_scn_id.store(SCN_INIT_VALUE);
+    }
+    
 }
 
 /**
@@ -148,6 +164,53 @@ write_scn_trx_id_mtr(Global_SCN_t scn,trx_id_t trx_id)
 	return;
 }
 
+#if 0
+byte*
+recovery_scn(byte* ptr,byte* end_ptr) {
+
+    trx_id_t trx_id = 0;
+    Global_SCN_t scn = 0;
+
+    if(end_ptr < ptr + 9) {
+        return NULL;
+    }
+
+    scn_mtr_type type = mach_read_from_1(ptr);
+
+    if(type == USER_SCN_TRX_ID) {
+        if(end_ptr < ptr + 17) {
+            return NULL;
+        }
+    }
+
+    ptr++;
+
+    switch(type) {
+        case USER_SCN_TRX_ID:
+        {
+            scn = mach_read_from_8(ptr);
+            ptr += 8;
+
+            trx_id = mach_read_from_8(ptr);
+            ptr += 8;
+
+            break;
+        }
+        case GLOBAL_MAX_SCN:
+        {
+            scn = mach_read_from_8(ptr);
+            ptr += 8;
+
+            break;
+        }
+        default:
+            ut_a(0);
+            break;
+    }
+
+}
+#endif
+
 /**
  * @brief Get the global scn object
  * 
@@ -187,8 +250,6 @@ trx_commit_in_scn(trx_t *trx,trx_id_t id,Global_SCN_t scn)
     info.trx_id = id;
 
     get_scn_block(&info);
-    
-    ut_d(info.block->scn[info.entry] == 0);
 
     info.block->scn[info.entry] = scn;
 
@@ -216,6 +277,10 @@ get_scn_by_trx_id(trx_id_t trx_id)
     return scn;
 }
 
+void 
+store_scn_to_file() {
+
+}
 
 /**
  * @brief trx make scn main thread

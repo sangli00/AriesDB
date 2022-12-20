@@ -234,30 +234,6 @@ bool lock_check_trx_id_sanity(
   return (is_ok);
 }
 
-/**
- * @brief use scn check rec is visible 
- * 
- * @param view 
- * @param trx_id 
- * @param name 
- * @return true rec is visible 
- * @return false don't visible this rec
- */
-static bool lock_clust_rec_cons_read_sees_for_scn(
-    ReadView *view,
-    trx_id_t trx_id,
-    const table_name_t &name)
-{
-  Global_SCN_t scn = get_scn_by_trx_id(trx_id);
-
-  if(view->get_scn() > scn)
-  {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 /** Checks that a record is seen in a consistent read.
  @return true if sees, or false if an earlier version of the record
  should be retrieved */
@@ -286,7 +262,7 @@ bool lock_clust_rec_cons_read_sees(
 
   trx_id_t trx_id = row_get_rec_trx_id(rec, index, offsets);
 
-  return lock_clust_rec_cons_read_sees_for_scn(view,trx_id,index->table->name);
+  return (view->changes_visible_scn(trx_id));
   //return (view->changes_visible(trx_id, index->table->name));
 }
 

@@ -53,6 +53,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "trx0rseg.h"
 #include "trx0trx.h"
 #include "trx0undo.h"
+#include "trx0scn.h"
 
 /** The transaction system */
 trx_sys_t *trx_sys = nullptr;
@@ -588,6 +589,7 @@ void trx_sys_create(void) {
 
   new (&trx_sys->tmp_rsegs) Rsegs();
   trx_sys->tmp_rsegs.set_empty();
+
 }
 
 /** Creates and initializes the transaction system at the database creation. */

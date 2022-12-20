@@ -2286,6 +2286,9 @@ ReadView *trx_assign_read_view(trx_t *trx) /*!< in/out: active transaction */
     trx_sys->mvcc->view_open(trx->read_view, trx);
   }
 
+  /* set readview scn */
+  trx->read_view->write_scn(trx->read_scn);
+
   return (trx->read_view);
 }
 
