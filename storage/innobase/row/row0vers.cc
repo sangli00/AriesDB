@@ -590,7 +590,9 @@ ibool row_vers_must_preserve_del_marked(trx_id_t trx_id,
 
   mtr_s_lock(&purge_sys->latch, mtr);
 
-  return (!purge_sys->view.changes_visible(trx_id, name));
+  return (!purge_sys->view.changes_visible_scn(trx_id));
+  //return (!purge_sys->view.changes_visible(trx_id, name));
+
 }
 
 /** Check whether all non-virtual columns in a index entries match
@@ -1278,7 +1280,7 @@ dberr_t row_vers_build_for_consistent_read(
     lob_undo->reset();
   }
 
-  ut_ad(!view->changes_visible(trx_id, index->table->name));
+  ut_ad(!view->changes_visible_scn(trx_id));
 
   ut_ad(!vrow || !(*vrow));
 

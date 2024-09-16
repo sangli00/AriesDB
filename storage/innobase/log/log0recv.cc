@@ -4368,6 +4368,9 @@ const char *get_mlog_string(mlog_id_t type) {
     case MLOG_COMP_PAGE_CREATE_SDI:
       return ("MLOG_COMP_PAGE_CREATE_SDI");
 
+    case MLOG_SCN:
+      return ("MLOG_SCN");
+
     case MLOG_TEST:
       return ("MLOG_TEST");
   }

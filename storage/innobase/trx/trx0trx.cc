@@ -64,6 +64,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "ut0new.h"
 #include "ut0pool.h"
 #include "ut0vec.h"
+#include "trx0scn.h"
 
 #include "my_dbug.h"
 #include "mysql/plugin.h"
@@ -1259,6 +1260,9 @@ static void trx_start_low(
 
   ++trx->version;
 
+  /* get read scn value */
+  trx->read_scn = get_global_scn();
+
   /* Check whether it is an AUTOCOMMIT SELECT */
   trx->auto_commit = (trx->api_trx && trx->api_auto_commit) ||
                      thd_trx_is_auto_commit(trx->mysql_thd);
@@ -2103,6 +2107,7 @@ void trx_commit_low(trx_t *trx, mtr_t *mtr) {
   assert_trx_nonlocking_or_in_list(trx);
   ut_ad(!trx_state_eq(trx, TRX_STATE_COMMITTED_IN_MEMORY));
   ut_ad(!mtr || mtr->is_active());
+  Global_SCN_t commit_scn = 0;
   /* undo_no is non-zero if we're doing the final commit. */
   if (trx->fts_trx != nullptr && trx->undo_no != 0 &&
       trx->lock.que_state != TRX_QUE_ROLLING_BACK) {
@@ -2187,6 +2192,21 @@ void trx_commit_low(trx_t *trx, mtr_t *mtr) {
   }
 #endif
 
+  if(!trx->read_only)
+  {
+    commit_scn = get_global_scn();
+    
+    trx->commit_scn = commit_scn;
+
+    if(trx->no != TRX_ID_MAX)
+    {
+      trx_commit_in_scn(trx,trx->no,trx->commit_scn);
+    }
+    
+    trx_commit_in_scn(trx,trx->id,trx->commit_scn);
+
+  }
+
   trx_commit_in_memory(trx, mtr, serialised);
 }
 
@@ -2265,6 +2285,9 @@ ReadView *trx_assign_read_view(trx_t *trx) /*!< in/out: active transaction */
   } else if (!MVCC::is_view_active(trx->read_view)) {
     trx_sys->mvcc->view_open(trx->read_view, trx);
   }
+
+  /* set readview scn */
+  trx->read_view->write_scn(trx->read_scn);
 
   return (trx->read_view);
 }

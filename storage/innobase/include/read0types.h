@@ -37,7 +37,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "dict0mem.h"
 
 #include "trx0types.h"
-
+#include "trx0scn.h"
 // Friend declaration
 class MVCC;
 
@@ -154,6 +154,37 @@ class ReadView {
   @param[in]	id		transaction id to check
   @param[in]	name		table name */
   static void check_trx_id_sanity(trx_id_t id, const table_name_t &name);
+
+  /**
+   * @brief get ReadView scn 
+   * 
+   * @return Global_SCN_t 
+   */
+  Global_SCN_t get_scn()
+  {
+    return scn;
+  }
+
+  /**
+   * @brief write scn to ReadView
+   * 
+   * @param global_scn 
+   */
+  void write_scn(Global_SCN_t global_scn)
+  {
+    scn = global_scn;
+  }
+
+  [[nodiscard]] bool changes_visible_scn(trx_id_t id) {
+    Global_SCN_t rec_scn = get_scn_by_trx_id(id);
+
+    if(scn > rec_scn)
+    {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   /** Check whether the changes by id are visible.
   @param[in]	id	transaction id to check against the view
@@ -278,6 +309,12 @@ class ReadView {
   ReadView &operator=(const ReadView &);
 
  private:
+  /**
+   * @brief readview use scn get rec consistent read. 
+   * 
+   */
+  Global_SCN_t scn;
+
   /** The read should not see any transaction with trx id >= this
   value. In other words, this is the "high water mark". */
   trx_id_t m_low_limit_id;

@@ -1259,6 +1259,9 @@ struct trx_t {
                   doing Non-locking Read-only Read
                   Committed on DD tables */
 #endif            /* UNIV_DEBUG */
+
+  Global_SCN_t read_scn;  /* start transaction need get global scn */
+  Global_SCN_t commit_scn; /* transaction commit scn */
   ulint magic_n;
 
   bool is_read_uncommitted() const {

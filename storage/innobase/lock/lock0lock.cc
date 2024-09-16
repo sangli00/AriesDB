@@ -58,6 +58,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "usr0sess.h"
 #include "ut0new.h"
 #include "ut0vec.h"
+#include "trx0scn.h"
 
 #include "my_dbug.h"
 #include "my_psi_config.h"
@@ -261,7 +262,8 @@ bool lock_clust_rec_cons_read_sees(
 
   trx_id_t trx_id = row_get_rec_trx_id(rec, index, offsets);
 
-  return (view->changes_visible(trx_id, index->table->name));
+  return (view->changes_visible_scn(trx_id));
+  //return (view->changes_visible(trx_id, index->table->name));
 }
 
 /** Checks that a non-clustered index record is seen in a consistent read.

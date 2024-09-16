@@ -449,6 +449,9 @@ constexpr uint32_t UINT32_UNDEFINED = -1;
 typedef ib_uint64_t ib_id_t;
 #define IB_ID_MAX IB_UINT64_MAX
 
+/* scn object type */
+typedef ib_id_t Global_SCN_t;
+
 /** Page number */
 typedef uint32_t page_no_t;
 /** Tablespace identifier */
